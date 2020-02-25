@@ -1,0 +1,48 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li
+      *ngFor="let part of path.split('/'); index as i; first as isFirst"
+      class="breadcrumb-item"
+    >
+      <a (click)="selectBreadcrumb(i)" href="#">{{ part }}</a>
+    </li>
+  </ol>
+</nav>
+
+<button class="btn btn-primary" type="button" (click)="getFiles('1001/')">
+  Refresh</button
+>&nbsp;&nbsp;
+<button class="btn btn-primary" type="button" (click)="clear()">
+  Clear
+</button>
+&nbsp;&nbsp;
+<input #file type="file" multiple />
+<button class="btn btn-primary" type="button" (click)="upload(file.files)">
+  Upload
+</button>
+
+<br /><br />
+<table class="table">
+  <thead class="thead-dark">
+    <tr scope="row">
+      <th scope="col">Agency ID</th>
+      <th scope="col">Path</th>
+      <th scope="col">Uploaded By</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let file of fileList" scope="row">
+      <td scope="col">{{ file.agencyID }}</td>
+      <td scope="col">
+        <a
+          *ngIf="file.objectType == 'Folder'"
+          (click)="selectFileItem(file)"
+          href="#"
+          >{{ file.displayName }}</a
+        >
+        <div *ngIf="file.objectType == 'File'">{{ file.displayName }}</div>
+      </td>
+      <td scope="col">{{ file.uploadedBy }}</td>
+    </tr>
+  </tbody>
+</table>
