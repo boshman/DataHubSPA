@@ -1,3 +1,13 @@
+<style>
+  .btn-group-xs > .btn,
+  .btn-xs {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.875rem;
+    line-height: 0.5;
+    border-radius: 0.2rem;
+  }
+</style>
+
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li
@@ -18,8 +28,17 @@
 &nbsp;&nbsp;
 <input #file type="file" multiple />
 <button class="btn btn-primary" type="button" (click)="upload(file.files)">
-  Upload
-</button>
+  Upload</button
+>&nbsp;
+<button
+  class="btn btn-primary"
+  [disabled]="this.selectedFile == '' || this.selectedFile == null"
+  type="button"
+  (click)="deleteFile()"
+>
+  Delete</button
+>&nbsp;&nbsp;
+<span>{{ this.selectedFile }}</span>
 
 <br /><br />
 <table class="table">
@@ -31,16 +50,25 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let file of fileList" scope="row">
+    <tr
+      *ngFor="let file of fileList"
+      scope="row"
+      (mouseover)="highlightRow(file)"
+      (mousedown)="toggleSelectedFile(file.path)"
+      [ngClass]="{ 'bg-light': file.path == this.hoveredFile }"
+      [ngStyle]="{ cursor: 'pointer' }"
+    >
       <td scope="col">{{ file.agencyID }}</td>
       <td scope="col">
         <a
           *ngIf="file.objectType == 'Folder'"
-          (click)="selectFileItem(file)"
+          (click)="selectFolder(file)"
           href="#"
           >{{ file.displayName }}</a
         >
-        <div *ngIf="file.objectType == 'File'">{{ file.displayName }}</div>
+        <div *ngIf="file.objectType == 'File'">
+          {{ file.displayName }}
+        </div>
       </td>
       <td scope="col">{{ file.uploadedBy }}</td>
     </tr>

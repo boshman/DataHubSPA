@@ -52,6 +52,28 @@ export class FilemanagerService {
     return result;
   }
 
+  deleteFile(path: string): Observable<string> {
+    let slash = encodeURIComponent("/");
+    path = path.replace("/", slash);
+
+    let result = this.http
+      .delete<string>(this.filesUrl + path)
+      .pipe(catchError(this.handleError<string>("deleteFile")));
+
+    return result;
+  }
+
+  deleteExtendedAttributes(agencyID: number, path: string): Observable<string> {
+    let slash = encodeURIComponent("/");
+    path = path.replace("/", slash);
+
+    let result = this.http
+      .delete<string>(this.dataUrl + agencyID + "/" + path)
+      .pipe(catchError(this.handleError<string>("deleteExtendedAttributes")));
+
+    return result;
+  }
+
   /**
    * Handle Http operation that failed.
    * Let the app continue.

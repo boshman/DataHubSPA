@@ -14,6 +14,8 @@ export class FilemanagerComponent implements OnInit {
   extendedAttributeList: DataHubFile[];
   path: string;
   svcResult: string;
+  selectedFile: string;
+  hoveredFile: string;
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -26,28 +28,30 @@ export class FilemanagerComponent implements OnInit {
   }
 
   getFiles(selPath: string): void {
+    console.log("selected path = " + this.path);
+
     this.fileManagerSvc.getExtendedAttributes(selPath).subscribe(files => {
       this.extendedAttributeList = files;
-    });
 
-    this.fileManagerSvc.getFiles(selPath).subscribe(files => {
-      this.fileList = files;
+      this.fileManagerSvc.getFiles(selPath).subscribe(files => {
+        this.fileList = files;
 
-      for (var i = 0; i < this.fileList.length; i++) {
-        let file = this.fileList[i];
-        var extendedAttribute = this.extendedAttributeList.find(
-          ea => ea.path == file.path
-        );
-        if (extendedAttribute != undefined) {
-          file.agencyID = extendedAttribute.agencyID;
-          //file.displayName = extendedAttribute.displayName;
-          file.published = extendedAttribute.published;
-          file.uploadedBy = extendedAttribute.uploadedBy;
-          file.uploadedDate = extendedAttribute.uploadedDate;
+        for (var i = 0; i < this.fileList.length; i++) {
+          let file = this.fileList[i];
+          var extendedAttribute = this.extendedAttributeList.find(
+            ea => ea.path == file.path
+          );
+          if (extendedAttribute != undefined) {
+            file.agencyID = extendedAttribute.agencyID;
+            //file.displayName = extendedAttribute.displayName;
+            file.published = extendedAttribute.published;
+            file.uploadedBy = extendedAttribute.uploadedBy;
+            file.uploadedDate = extendedAttribute.uploadedDate;
+          }
         }
-      }
 
-      this.cdRef.detectChanges();
+        this.cdRef.detectChanges();
+      });
     });
   }
 
@@ -67,10 +71,17 @@ export class FilemanagerComponent implements OnInit {
     this.getFiles(selPath);
   }
 
-  selectFileItem(file: DataHubFile): void {
-    //alert("item '" + file.path + "' is a " + file.objectType);
+  selectFolder(file: DataHubFile): void {
     this.path = file.path;
     this.getFiles(file.path);
+  }
+
+  toggleSelectedFile(filePath: string): void {
+    this.selectedFile = this.selectedFile == filePath ? "" : filePath;
+  }
+
+  public highlightRow(file: DataHubFile) {
+    this.hoveredFile = file.path;
   }
 
   upload(files): void {
@@ -95,8 +106,26 @@ export class FilemanagerComponent implements OnInit {
       objectType: "FILE",
       displayName: ""
     };
+
     this.fileManagerSvc.addExtendedAttributes(datahubfile).subscribe(r => {
       this.svcResult = r;
+
+      this.getFiles(this.path);
+    });
+  }
+
+  deleteFile(): void {
+    this.fileManagerSvc.deleteFile(this.selectedFile).subscribe(r => {
+      this.svcResult = r;
+
+      this.fileManagerSvc
+        .deleteExtendedAttributes(1001, this.selectedFile)
+        .subscribe(r => {
+          this.svcResult = r;
+
+          this.selectedFile = "";
+          this.getFiles(this.path);
+        });
     });
   }
 }
