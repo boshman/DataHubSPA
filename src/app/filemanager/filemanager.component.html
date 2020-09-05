@@ -8,6 +8,7 @@
   }
 </style>
 
+<!-- Breadcrumbs -->
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li
@@ -18,32 +19,77 @@
     </li>
   </ol>
 </nav>
-
-<button class="btn btn-primary" type="button" (click)="getFiles('1001/')">
-  Refresh</button
->&nbsp;&nbsp;
-<button class="btn btn-primary" type="button" (click)="clear()">
-  Clear
-</button>
-&nbsp;&nbsp;
-<input #file type="file" multiple />
-<button class="btn btn-primary" type="button" (click)="upload(file.files)">
-  Upload</button
->&nbsp;
-<button
-  class="btn btn-primary"
-  [disabled]="this.selectedFile == '' || this.selectedFile == null"
-  type="button"
-  (click)="deleteFile()"
->
-  Delete</button
->&nbsp;&nbsp;
-<span>{{ this.selectedFile }}</span>
-
-<br /><br />
+<!-- End Breadcrumbs -->
+<!-- Toolbar -->
+<nav class="mb-1 navbar navbar-expand-lg btn-blue">
+  <ul class="navbar-nav ml-auto nav-flex-icons">
+    <li class="nav-item">
+      <a
+        class="nav-link waves-effect waves-light"
+        href="#"
+        title="Refresh"
+        (click)="getFiles('1001/')"
+      >
+        <i class="fas fa-redo"></i>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link waves-effect waves-light"
+        href="#"
+        title="Clear"
+        (click)="clear()"
+      >
+        <i class="fas fa-broom"></i>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link waves-effect waves-light"
+        href="#"
+        title="Add Folder"
+        (click)="clear()"
+      >
+        <i class="fas fa-folder-plus"></i>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link waves-effect waves-light"
+        title="Upload"
+        href="#"
+        data-toggle="modal"
+        data-target="#exampleModal"
+      >
+        <i class="fas fa-upload"></i>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link waves-effect waves-light" title="Download" href="#">
+        <i class="fas fa-download"></i>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link waves-effect waves-light"
+        title="Delete"
+        [class.disabled]="!this.isFileSelected()"
+        [attr.href]="this.isFileSelected() ? '#' : null"
+        (click)="deleteFile()"
+      >
+        <i class="fas fa-trash"></i
+        ><span style="padding-left: 20px;">{{ this.selectedFile }}</span>
+      </a>
+    </li>
+  </ul>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent-3"></div>
+</nav>
+<!--End Toolbar-->
+<!-- File list -->
 <table class="table">
   <thead class="thead-dark">
     <tr scope="row">
+      <th scope="col"></th>
       <th scope="col">Agency ID</th>
       <th scope="col">Path</th>
       <th scope="col">Uploaded By</th>
@@ -58,6 +104,7 @@
       [ngClass]="{ 'bg-light': file.path == this.hoveredFile }"
       [ngStyle]="{ cursor: 'pointer' }"
     >
+      <td scope="col"><input type="checkbox" /></td>
       <td scope="col">{{ file.agencyID }}</td>
       <td scope="col">
         <a
@@ -74,3 +121,46 @@
     </tr>
   </tbody>
 </table>
+<!-- End File List -->
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="exampleModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Upload Files</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input #file type="file" multiple />
+
+        <button
+          class="btn btn-primary"
+          type="button"
+          (click)="upload(file.files)"
+        >
+          Upload
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Modal -->

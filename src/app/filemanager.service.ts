@@ -5,18 +5,23 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable, of } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { encode } from "punycode";
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: "root"
 })
 export class FilemanagerService {
-  constructor(private http: HttpClient) {}
-  private filesUrl = "https://localhost:5001/api/Files/"; // URL to web api - file
-  private dataUrl = "https://localhost:6001/data/"; //URL to web api - data
+  private filesUrl = ""; //= "https://localhost:5001/api/Files/"; // URL to web api - file
+  private dataUrl = ""; //"https://localhost:6001/data/"; //URL to web api - data
+
+  constructor(private http: HttpClient) {
+    this.filesUrl = environment.fileServiceUri;
+    this.dataUrl = environment.dataServiceUri;
+  }
 
   getFiles(path: string): Observable<DataHubFile[]> {
     let slash = encodeURIComponent("/");
-    path = path.replace("/", slash);
+    path = path.replace(/\//g, slash);
 
     let fileInfo = /*return*/ this.http
       .get<DataHubFile[]>(this.filesUrl + path)
@@ -27,7 +32,7 @@ export class FilemanagerService {
 
   getExtendedAttributes(path: string): Observable<DataHubFile[]> {
     let slash = encodeURIComponent("/");
-    path = path.replace("/", slash);
+    path = path.replace(/\//g, slash);
 
     let dataInfo = this.http
       .get<DataHubFile[]>(this.dataUrl + "1001/" + path)
@@ -54,7 +59,7 @@ export class FilemanagerService {
 
   deleteFile(path: string): Observable<string> {
     let slash = encodeURIComponent("/");
-    path = path.replace("/", slash);
+    path = path.replace(/\//g, slash);
 
     let result = this.http
       .delete<string>(this.filesUrl + path)
@@ -65,7 +70,7 @@ export class FilemanagerService {
 
   deleteExtendedAttributes(agencyID: number, path: string): Observable<string> {
     let slash = encodeURIComponent("/");
-    path = path.replace("/", slash);
+    path = path.replace(/\//g, slash);
 
     let result = this.http
       .delete<string>(this.dataUrl + agencyID + "/" + path)

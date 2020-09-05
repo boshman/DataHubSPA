@@ -3,7 +3,15 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  // dataServiceUri:
+  //   "http://datahub-lb-442687968.us-east-1.elb.amazonaws.com/data/",
+  // fileServiceUri:
+  //   "http://datahub-lb-442687968.us-east-1.elb.amazonaws.com/api/files/",
+  // dataServiceUri: "https://localhost:4001/data/",
+  // fileServiceUri: "https://localhost:5001/api/Files/",
+  dataServiceUri: "http://localhost:4000/data/",
+  fileServiceUri: "http://localhost:5000/api/Files/",
 };
 
 /*

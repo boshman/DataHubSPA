@@ -7,7 +7,7 @@ import { Data } from "@angular/router";
 @Component({
   selector: "app-filemanager",
   templateUrl: "./filemanager.component.html",
-  styleUrls: ["./filemanager.component.css"]
+  styleUrls: ["./filemanager.component.css"],
 })
 export class FilemanagerComponent implements OnInit {
   fileList: DataHubFile[];
@@ -16,6 +16,7 @@ export class FilemanagerComponent implements OnInit {
   svcResult: string;
   selectedFile: string;
   hoveredFile: string;
+  selectedFiles: string[] = [];
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -30,16 +31,16 @@ export class FilemanagerComponent implements OnInit {
   getFiles(selPath: string): void {
     console.log("selected path = " + this.path);
 
-    this.fileManagerSvc.getExtendedAttributes(selPath).subscribe(files => {
+    this.fileManagerSvc.getExtendedAttributes(selPath).subscribe((files) => {
       this.extendedAttributeList = files;
 
-      this.fileManagerSvc.getFiles(selPath).subscribe(files => {
+      this.fileManagerSvc.getFiles(selPath).subscribe((files) => {
         this.fileList = files;
 
         for (var i = 0; i < this.fileList.length; i++) {
           let file = this.fileList[i];
           var extendedAttribute = this.extendedAttributeList.find(
-            ea => ea.path == file.path
+            (ea) => ea.path == file.path
           );
           if (extendedAttribute != undefined) {
             file.agencyID = extendedAttribute.agencyID;
@@ -53,10 +54,13 @@ export class FilemanagerComponent implements OnInit {
         this.cdRef.detectChanges();
       });
     });
+
+    this.selectedFile = "";
   }
 
   clear(): void {
     this.fileList = null;
+    this.selectedFile = "";
   }
 
   selectBreadcrumb(index): void {
@@ -78,6 +82,12 @@ export class FilemanagerComponent implements OnInit {
 
   toggleSelectedFile(filePath: string): void {
     this.selectedFile = this.selectedFile == filePath ? "" : filePath;
+    if (this.selectedFile != "") {
+      this.selectedFiles.push(this.selectedFile);
+    } else {
+      const index: number = this.selectedFiles.indexOf(this.selectedFile);
+      if (index !== -1) this.selectedFiles.splice(index, 1);
+    }
   }
 
   public highlightRow(file: DataHubFile) {
@@ -91,41 +101,46 @@ export class FilemanagerComponent implements OnInit {
 
     for (let f of files) {
       formData.append(f.name, f);
+      formData.append("path", this.path + f.name);
     }
 
-    this.fileManagerSvc.uploadFile(formData).subscribe(r => {
-      this.svcResult = r;
-    });
-
-    let datahubfile: DataHubFile = {
-      agencyID: 1001,
-      path: this.path + files[0].name,
-      uploadedBy: "boshman",
-      uploadedDate: null,
-      published: false,
-      objectType: "FILE",
-      displayName: ""
-    };
-
-    this.fileManagerSvc.addExtendedAttributes(datahubfile).subscribe(r => {
+    this.fileManagerSvc.uploadFile(formData).subscribe((r) => {
       this.svcResult = r;
 
-      this.getFiles(this.path);
+      let datahubfile: DataHubFile = {
+        agencyID: 1001,
+        path: this.path + files[0].name,
+        uploadedBy: "boshman",
+        uploadedDate: null,
+        published: false,
+        objectType: "FILE",
+        displayName: "",
+      };
+
+      this.fileManagerSvc.addExtendedAttributes(datahubfile).subscribe((r) => {
+        this.svcResult = r;
+
+        this.getFiles(this.path);
+      });
     });
   }
 
   deleteFile(): void {
-    this.fileManagerSvc.deleteFile(this.selectedFile).subscribe(r => {
+    this.fileManagerSvc.deleteFile(this.selectedFile).subscribe((r) => {
       this.svcResult = r;
 
       this.fileManagerSvc
         .deleteExtendedAttributes(1001, this.selectedFile)
-        .subscribe(r => {
+        .subscribe((r) => {
           this.svcResult = r;
 
           this.selectedFile = "";
           this.getFiles(this.path);
         });
     });
+  }
+
+  isFileSelected() {
+    return this.selectedFile != "" && this.selectedFile != null;
   }
 }
