@@ -1,2 +1,7 @@
-<H1>File Manager</H1> 
-<app-filemanager></app-filemanager>
+<H1>File Manager</H1>
+<amplify-authenticator *ngIf="authState !== 'signedin'"></amplify-authenticator>
+<div *ngIf="authState === 'signedin' && user" class="App">
+  <amplify-sign-out></amplify-sign-out>
+  <app-filemanager></app-filemanager>
+  <!-- This is where you application template code goes -->
+</div>
