@@ -6,9 +6,10 @@ import { Observable, of } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { encode } from "punycode";
 import { environment } from "src/environments/environment";
+//import { toBase64String } from "@angular/compiler/src/output/source_map";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class FilemanagerService {
   private filesUrl = ""; //= "https://localhost:5001/api/Files/"; // URL to web api - file
@@ -20,7 +21,7 @@ export class FilemanagerService {
   }
 
   getFiles(path: string): Observable<DataHubFile[]> {
-    let slash = encodeURIComponent("/");
+    let slash = btoa("/"); // toBase64String("/");
     path = path.replace(/\//g, slash);
 
     let fileInfo = /*return*/ this.http
@@ -31,7 +32,7 @@ export class FilemanagerService {
   }
 
   getExtendedAttributes(path: string): Observable<DataHubFile[]> {
-    let slash = encodeURIComponent("/");
+    let slash = btoa("/"); // toBase64String("/");
     path = path.replace(/\//g, slash);
 
     let dataInfo = this.http
@@ -58,7 +59,7 @@ export class FilemanagerService {
   }
 
   deleteFile(path: string): Observable<string> {
-    let slash = encodeURIComponent("/");
+    let slash = btoa("/"); // toBase64String("/");
     path = path.replace(/\//g, slash);
 
     let result = this.http
@@ -69,7 +70,7 @@ export class FilemanagerService {
   }
 
   deleteExtendedAttributes(agencyID: number, path: string): Observable<string> {
-    let slash = encodeURIComponent("/");
+    let slash = btoa("/"); // toBase64String("/");
     path = path.replace(/\//g, slash);
 
     let result = this.http
